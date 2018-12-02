@@ -10,6 +10,10 @@ LSM树牺牲了部分读性能，用来大幅提高写性能。
 
 ![](https://i.imgur.com/kGCj0dv.png)
 
+内存和磁盘中的数据merge操作
+
+![](https://i.imgur.com/29Uc3zO.png)
+
 <pre>
 LSM树的设计思想：
       LSM树的设计思想非常朴素：将对数据的修改增量保存在内存中，达到指定的大小限制后将这些
@@ -19,4 +23,12 @@ LSM树的设计思想：
 
    LSM树原理把一棵大树拆分成N棵小树，它首先写入内存中，随着小树越来越大，内存中的小树会
    flush到磁盘上，磁盘上的树定期可以做merge操作，合并成一棵大树，以优化读性能。
+
+   以上这些大概就是HBase存储的设计主要思想，这里分别对应说明下：
+
+   因为小树先写到内存中，为了防止内存数据丢失，写内存的同时需要暂时持久化到磁盘，对应
+   了HBase的MemStore和HLogMemStore上的树达到一定大小之后，需要flush到HRegion磁盘中
+  （一般是Hadoop DataNode），这样MemStore就变成了DataNode上的磁盘文件StoreFile，定
+   期HRegionServer对DataNode的数据做merge操作，彻底删除无效空间，多棵小树在这个时机
+   合并成大树，来增强读性能。
 </pre>
