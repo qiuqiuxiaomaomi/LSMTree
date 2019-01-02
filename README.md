@@ -32,3 +32,26 @@ LSM树的设计思想：
    期HRegionServer对DataNode的数据做merge操作，彻底删除无效空间，多棵小树在这个时机
    合并成大树，来增强读性能。
 </pre>
+
+<pre>
+Minor compaction
+      Minor compaction 的目的是当内存中的memtable大小到了一定值时，将内容保存到磁盘文件中
+
+Major compaction
+      当某个level下的SSTable文件数目超过一定设置值后，levelDb会从这个level的SSTable中选
+      择一个文件（level>0），将其和高一层级的level+1的SSTable文件合并，这就是major 
+      compaction
+</pre>
+
+<pre>
+写流程
+　　  LevelDB的写操作包括设置key-value和删除key两种。需要指出的是这两种情况在LevelDB的处理
+     上是一致的，删除操作其实是向LevelDB插入一条标识为删除的数据。 
+      Memtable并不存在真正的删除操作，删除某个Key的Value在Memtable内是作为插入一条记录实施
+      的，但是会打上一个Key的删除标记，真正的删除操作是Lazy的，会在以后的Compaction过程中去
+      掉这个KV。
+
+读流程
+      首先，生成内部查询所用的Key，用生成的Key，依次尝试从 Memtable，Immtable以及SST文件中读
+      取，直到找到（或者查到最高level，查找失败，说明整个系统中不存在这个Key)。 
+</pre>
