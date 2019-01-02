@@ -1,6 +1,16 @@
 # LSMTree
 LSM树技术研究
 
+<pre>
+这个需要和BTree一起来讲，我们都知道BTree是Balance Tree，为了维持Balancing的特性，每次读入的时
+候需要对树进行调整，是一笔不小的时间损耗。在一些使用场景下（例如google爬取网页），需要高性能写入，
+而对读的要求并不是那么高。因此，LSM树是基于这样的背景下发展出来的，针对类似的场景LSM提出了很多优化
+措施。
+
+应用场景
+
+举几个比较常见的例子：HBase、LevelDB、RocksDB
+</pre>
 
 <pre>
 LSM树(Log-Structured Merge Tree)树存储引擎和B树存储引擎一样，同样支持增，删，读，改，
